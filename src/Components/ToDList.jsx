@@ -1,52 +1,80 @@
 import React, { Component } from 'react';
-import '../App.css'
+import '../App.css';
 
-export default class ToDoList extends Component {
+class TaskInput extends Component {
+    render() {
+        const { value, onChange, onAdd } = this.props;
+        return (
+            <div className='ADiv'>
+                <input
+                    type='text'
+                    className='input'
+                    value={value}
+                    onChange={onChange}
+                    placeholder='Type here..'
+                />
+                <button onClick={onAdd}>ADD</button>
+            </div>
+        );
+    }
+}
+
+class TaskItem extends Component {
+    render() {
+        const { value, onChange, onDelete } = this.props;
+        return (
+            <div>
+                <input
+                    className='outputs'
+                    type='text'
+                    value={value}
+                    onChange={onChange}
+                />
+                <button className='deletebutton' onClick={onDelete}>Delete</button>
+                <br />
+            </div>
+        );
+    }
+}
+
+class ToDoList extends Component {
     constructor() {
         super();
-
-        this.getText = this.getText.bind(this);
-        this.addDiv = this.addDiv.bind(this);
-        this.updateInput = this.updateInput.bind(this);
-
         this.state = {
             inp: '',
             inputs: [],
         };
     }
 
-    getText(e) {
+    getText = (e) => {
         this.setState({
             inp: e.target.value,
         });
-    }
+    };
 
-    addDiv() {
+    addDiv = () => {
         if (this.state.inp === '') {
             return;
         }
-        let oldVal = this.state.inp;
-        let oldInputs = [...this.state.inputs];
 
-        oldInputs.push(oldVal);
-
+        const { inp, inputs } = this.state;
         this.setState({
             inp: '',
-            inputs: oldInputs,
+            inputs: [...inputs, inp],
         });
-    }
+    };
 
-    updateInput(e, ind) {
-        let oldInputArr = [...this.state.inputs];
+    updateInput = (e, ind) => {
+        const oldInputArr = [...this.state.inputs];
         oldInputArr[ind] = e.target.value;
 
         this.setState({
             inputs: oldInputArr,
         });
-    }
+    };
 
     deleteData = (ind) => {
-        let oldIns = [...this.state.inputs];
+        const oldIns = [...this.state.inputs];
         oldIns.splice(ind, 1);
 
         this.setState({
@@ -57,44 +85,32 @@ export default class ToDoList extends Component {
 
     render() {
         return (
-            <>
-                <div className='bigbody'>
-                    <h1 className='heading'>To-Do App</h1>
-                    <img
-                        src="https://s3.ap-south-1.amazonaws.com/kalvi-education.github.io/front-end-web-development/todo-app-bot.png"
+            <div className='bigbody'>
+                <h1 className='heading'>To-Do App</h1>
+                <img
+                    src="https://s3.ap-south-1.amazonaws.com/kalvi-education.github.io/front-end-web-development/todo-app-bot.png"
+                    alt="ToDo App Bot"
+                />
+                <div className='Body'>
+                    <TaskInput
+                        value={this.state.inp}
+                        onChange={this.getText}
+                        onAdd={this.addDiv}
                     />
-                    <div className='Body'>
-                        <div className='ADiv'>
-                            <input
-                                type='text'
-                                className='input'
-                                onChange={this.getText}
-                                value={this.state.inp}
-                                placeholder='Type here..'
-                            />
-                            <button onClick={this.addDiv}>ADD</button>
-                        </div>
-                    </div>
-                    <br />
-                    <div className='textarea'>{this.state.inp} </div>
-                    <br />
-
-                    {this.state.inputs.map((item, ind) => {
-                        return (
-                            <div key={ind}>
-                                <input
-                                    className='outputs'
-                                    type='text'
-                                    value={item}
-                                    onChange={(e) => this.updateInput(e, ind)}
-                                />
-                                <button className='deletebutton' onClick={() => this.deleteData(ind)}>Delete</button>
-                                <br />
-                            </div>
-                        );
-                    })}
                 </div>
-            </>
-        )
+                <br />
+
+                {this.state.inputs.map((item, ind) => (
+                    <TaskItem
+                        key={ind}
+                        value={item}
+                        onChange={(e) => this.updateInput(e, ind)}
+                        onDelete={() => this.deleteData(ind)}
+                    />
+                ))}
+            </div>
+        );
     }
 }
+
+export default ToDoList;
